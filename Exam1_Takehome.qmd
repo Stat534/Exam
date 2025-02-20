@@ -1,0 +1,78 @@
+---
+title: "Stat 534 Exam 1: Take Home"
+format: pdf
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+library(spatstat)
+library(ggmap)
+```
+
+This exam will work through the analysis of a point pattern dataset that contains flying fox locations collected via radar in Lismore, NSW, Australia.
+
+```{r}
+#| message: false
+locations <- read_csv('https://raw.githubusercontent.com/Stat534/data/refs/heads/main/bat_locations.csv')
+```
+
+Type is an identifier that denotes whether the object was classified as small (6), medium (7), or large (8).
+
+### 1. (5 points)
+
+Create a visual display of the locations of the flying foxes. The location of the flying foxes should be overlaid on a map that shows the background information. Denote the different types of flying fox identifiers on your map.
+
+### 2. (4 points)
+
+What is the maximum distance (in meters) between locations of the flying foxes that were classified as large (type = 8). Explain and justify your approach.
+
+### 3. (4 points)
+
+Use the following boundary and determine whether the point process exhibits CSR. You can ignore the marks for this question.
+
+```{r}
+lismore_boundary <- data.frame(y = c(-28.7787242, -28.7939313, -28.8216641,
+                                   -28.8660430, -28.8825686, -28.8857427,
+                                   -28.8369252, -28.8032197),   
+                       x = c(153.2980313, 153.2388982, 153.2191639,
+                             153.2308572, 153.2569820, 153.2807977,
+                             153.3214725, 153.3279006)
+                                )
+owin(poly = list(lismore_boundary))
+
+```
+
+### 4. (5 points)
+
+Create intensity and density (for location) plots for the three different sizes of flying foxes. Do you see different patterns in the intensity or location density for the three different flying fox sizes?
+
+### 5. (4 points)
+
+The following code will use `rgee` to extract elevation for this area. Plot the locations of the flying foxes on the elevation map.
+
+```{r}
+library(rgee)
+ee_Initialize(drive = TRUE)
+
+dataset <- ee$Image('AU/GA/DEM_1SEC/v10/DEM-H')
+elevation <- dataset$select('elevation')
+
+lismore_coords <- list(c(153.2980, -28.77872), 
+                       c(153.2389, -28.79393), 
+                       c(153.2192, -28.82166), 
+                       c(153.2309, -28.86604),
+                       c(153.2570, -28.88257),
+                       c(153.2808, -28.88574),
+                       c(153.3215, -28.83693),
+                       c(153.3279, -28.80322))
+
+lismore_polygon <- ee$Geometry$Polygon(lismore_coords) 
+```
+
+### 6. (5 points)
+
+Recall the following function can be used to convert a Spatial Raster to an `im` object. Examine whether elevation impacts the presence of flying foxes - you can ignore the marks for this analysis too. Write a summary describing your results.
