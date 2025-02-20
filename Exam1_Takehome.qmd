@@ -76,3 +76,27 @@ lismore_polygon <- ee$Geometry$Polygon(lismore_coords)
 ### 6. (5 points)
 
 Recall the following function can be used to convert a Spatial Raster to an `im` object. Examine whether elevation impacts the presence of flying foxes - you can ignore the marks for this analysis too. Write a summary describing your results.
+
+```{r}
+as.im.SpatRaster1 <- function(X) {
+    X <- X[[1]]
+    rs <- terra::res(X)
+    e <- as.vector(terra::ext(X))
+    out <- list(
+        v = as.matrix(X, wide=TRUE)[nrow(X):1, ],
+        dim = dim(X)[1:2],
+        xrange = e[1:2],
+        yrange = e[3:4],
+        xstep = rs[1],
+        ystep = rs[2],
+        xcol = e[1] + (1:ncol(X)) * rs[1] + 0.5 * rs[1],
+        yrow = e[4] - (nrow(X):1) * rs[2] + 0.5 * rs[2],
+        type = "real",
+        units  = list(singular=units(X), plural=units(X), multiplier=1)
+    )
+    attr(out$units, "class") <- "unitname"
+    attr(out, "class") <- "im"
+    out
+}
+
+```
