@@ -1,0 +1,72 @@
+---
+title: "Stat 534 Exam 2: Take Home"
+format: pdf
+editor: visual
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| include: false
+library(tidyverse)
+library(sf)
+library(viridis)
+library(rstan)
+options(mc.cores = parallel::detectCores())
+rstan_options(auto_write = TRUE)
+```
+
+This exam will work through the analysis of a dataset collected at SNOTEL sites in Montana. SNOTEL (SNOwpack TELemetry) are a network of weather sites that capture the depth of snow in alpine locations. More information for Montana sites is available at the following link: <https://www.nrcs.usda.gov/montana/snow-survey>.
+
+The `snotel` dataset contains the Snow Water Equivalent (SWE) at a set of sites on April 12th. One inch of water can result in anywhere from about 1 inch to up to 20 inches of snow. So the SNOTEL sites measure snow as SWE, in inches, which is the amount of water in the snow if the snow was melted.
+
+```{r}
+#| message: false
+snotel <- read_csv('https://raw.githubusercontent.com/Stat534/data/refs/heads/main/MT_SWE.csv')
+head(snotel)
+```
+
+### 1. (5 points)
+
+Create a map of the location of the SNOTEL sites. On this map (or paneled maps) include information on SWE and elevation.
+
+### 2. (5 points)
+
+Create a figure to explore the relationship between elevation and swe. Add a caption to this figure describing how elevation impacts swe.
+
+### 3. (5 points)
+
+Create a variogram for the residuals of a linear model that accounts for elevation. Comment on the figure and the potential presence of spatial structure.
+
+### 4. (5 points)
+
+Create a directional variogram for the residuals of a linear model that accounts for elevation. Comment on the figure and the potential presence of anisotropic spatial structure.
+
+### 5. (5 points)
+
+Regardless of your findings in questions 3 and 4, write out a spatial linear model for SWE given elevation at SNOTEL sites in Montana. Be explicit with your notation and clearly define all parameters.
+
+### 6. (5 points)
+
+Using the `snotel_train` dataset with 70 points, fit the spatial statistical model you've outlined in Q5. Print out your stan code and report the model parameters.
+
+```{r}
+snotel_train <- read_csv('https://raw.githubusercontent.com/Stat534/data/refs/heads/main/snotel_train.csv') |>
+  mutate(elev_scale = (Elevation_ft - mean(Elevation_ft)) / sd(Elevation_ft) )
+
+snotel_test <- read_csv('https://raw.githubusercontent.com/Stat534/data/refs/heads/main/snotel_test.csv') |>
+  mutate(elev_scale = (Elevation_ft - mean(Elevation_ft)) / sd(Elevation_ft) )
+
+```
+
+### 7. (5 points)
+
+Using the `snotel_train` dataset with 70 points, fit a simple linear model that accounts for elevation but without spatial structure. Print out your stan code and report the model parameters.
+
+### 8. (5 points)
+
+Create a figure that shows your interval predictions at Sacajawea `(Sacajawea (929))` - which is located in the Bridger Range - for both the spatial model in Q6 and the non-spatial model in Q7. Include the CRPS values from each prediction in the discussion of the figure.
+
+### 9. (5 points)
+
+Compare the models in Q6 and Q7 using CRPS and discuss which model you prefer and why.
