@@ -19,8 +19,13 @@ This exam will work through the analysis of a dataset collected in Ballina, NSW,
 ```{r}
 #| message: false
 
-load(url('https://github.com/Stat534/data/raw/refs/heads/main/ballina.RData'))
-head(ballina_out)
+# modified May 5 2pm
+# load(url('https://github.com/Stat534/data/raw/refs/heads/main/ballina.RData'))
+# head(ballina_out)
+
+load(url('https://github.com/Stat534/data/raw/refs/heads/main/ballina_small.RData'))
+
+head(ballina_small)
 ```
 
 The following variables are included in the dataset:
